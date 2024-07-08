@@ -30,7 +30,9 @@ class Predictor(BasePredictor):
         # Create a more persistent output directory
         output_dir = Path("/tmp/cog_output")
         output_dir.mkdir(exist_ok=True)
-        output_path = output_dir / "output.mp4"
+        
+        # Generate a unique filename for the output
+        output_path = output_dir / f"output_{os.urandom(4).hex()}.mp4"
 
         input_duration = self.get_video_info(input_video)
         print(f"Input video duration: {input_duration:.2f} seconds")
@@ -45,6 +47,7 @@ class Predictor(BasePredictor):
             "-i", str(input_video),
             "-filter:v", filter_complex,
             "-c:a", "copy",
+            "-y",  # Force overwrite without prompting
             str(output_path)
         ]
         
@@ -73,5 +76,5 @@ class Predictor(BasePredictor):
         
         print(f"Output file size: {output_path.stat().st_size} bytes")
         print(f"Output file exists: {output_path.exists()}")
-        
         return CogPath(output_path)
+        
